@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import TodoList from './TodoList'
 import { Context } from './Context'
+import reducer from './reducer';
 
 const App = (props) => {
 
-	const [todos, setTodos] = useState([])
+	const [state, dispatch] = useReducer(reducer, JSON.parse(localStorage.getItem('todos')))
 
 	const [todoTitle, setTodoTitle] = useState('');
 
@@ -13,47 +14,24 @@ const App = (props) => {
 	}
 
 	useEffect(() => {
-		const raw = localStorage.getItem('todos') || [];
-		setTodos(JSON.parse(raw));
-	}, [])
-
-	useEffect(() => {
-		localStorage.setItem('todos', JSON.stringify(todos))
-	}, [todos])
+		localStorage.setItem('todos', JSON.stringify(state))
+	}, [state])
 
 	const addTodo = (e) => {
+
 		if (e.key === 'Enter') {
-			setTodos([
-				...todos,
-				{
-					id: Date.now(),
-					title: todoTitle,
-					completed: false
-				}
-			])
+			dispatch({
+				type: 'add',
+				payload: todoTitle
+			})
 			setTodoTitle('');
 		}
-	}
-
-	const removeTodo = (id) => {
-		setTodos(todos.filter(todo => {
-			return todo.id !== id;
-		}))
-	}
-
-	const toggleTodo = (id) => {
-		setTodos(todos.map(todo => {
-			if (todo.id === id) {
-				todo.completed = !todo.completed
-			}
-			return todo
-		}))
 	}
 
 
 	return (
 		<Context.Provider value={{
-			removeTodo, toggleTodo
+			dispatch
 		}}>
 			<div className="container">
 				<h2>Todo app</h2>
@@ -67,7 +45,7 @@ const App = (props) => {
 					<label>Todo name</label>
 				</div>
 
-				<TodoList todos={todos} />
+				<TodoList todos={state} />
 			</div>
 		</Context.Provider>
 	);

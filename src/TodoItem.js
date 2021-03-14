@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Context } from './Context'
 
 const TodoItem = ({ title, id, completed }) => {
-	const { toggleTodo, removeTodo } = useContext(Context);
+	const { dispatch } = useContext(Context);
 
 	const cls = ['todo'];
 
@@ -11,7 +11,17 @@ const TodoItem = ({ title, id, completed }) => {
 	}
 
 	const addChecked = () => {
-		toggleTodo(id)
+		dispatch({
+			type: 'toggle',
+			payload: id
+		})
+	}
+
+	const removeTodo = () => {
+		dispatch({
+			type: 'remove',
+			payload: id
+		})
 	}
 
 	return (
@@ -26,7 +36,7 @@ const TodoItem = ({ title, id, completed }) => {
 
 				<i
 					className="material-icons red-text"
-					onClick={() => removeTodo(id)}
+					onClick={removeTodo}
 				>
 					delete
         </i>
