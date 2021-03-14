@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import TodoList from './TodoList'
+import { Context } from './Context'
 
 const App = (props) => {
 
@@ -34,21 +35,41 @@ const App = (props) => {
 		}
 	}
 
+	const removeTodo = (id) => {
+		setTodos(todos.filter(todo => {
+			return todo.id !== id;
+		}))
+	}
+
+	const toggleTodo = (id) => {
+		setTodos(todos.map(todo => {
+			if (todo.id === id) {
+				todo.completed = !todo.completed
+			}
+			return todo
+		}))
+	}
+
+
 	return (
-		<div className="container">
-			<h2>Todo app</h2>
+		<Context.Provider value={{
+			removeTodo, toggleTodo
+		}}>
+			<div className="container">
+				<h2>Todo app</h2>
 
-			<div className="input-field">
-				<input type="text"
-					onChange={onChangeTodoTitle}
-					value={todoTitle}
-					onKeyPress={addTodo}
-				/>
-				<label>Todo name</label>
+				<div className="input-field">
+					<input type="text"
+						onChange={onChangeTodoTitle}
+						value={todoTitle}
+						onKeyPress={addTodo}
+					/>
+					<label>Todo name</label>
+				</div>
+
+				<TodoList todos={todos} />
 			</div>
-
-			<TodoList todos={todos} />
-		</div>
+		</Context.Provider>
 	);
 }
 
